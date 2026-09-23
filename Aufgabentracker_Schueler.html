@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aufgabentracker – Klassenübersicht</title>
+  <style>
+    :root {
+      --ink:#183153; --muted:#6b778c; --line:#dfe5ec; --paper:#fff;
+      --bg:#f3f6f9; --blue:#2563eb; --blue-dark:#1d4ed8;
+      --yellow:#fff1a8; --yellow-ink:#705700; --green:#bbf7d0; --green-ink:#14532d;
+      --danger:#b42318;
+    }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:var(--bg); font:15px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif; }
+    .app { max-width:1500px; margin:0 auto; padding:30px 24px 50px; }
+    header { display:flex; align-items:flex-end; justify-content:space-between; gap:18px; margin-bottom:22px; }
+    h1 { margin:0 0 4px; font-size:clamp(25px,3vw,38px); letter-spacing:-.04em; }
+    .subtitle { margin:0; color:var(--muted); }
+    .actions { display:flex; gap:9px; flex-wrap:wrap; }
+    button { border:0; border-radius:9px; padding:10px 14px; font:600 14px inherit; cursor:pointer; transition:.15s; }
+    button:hover { transform:translateY(-1px); }
+    .primary { color:#fff; background:var(--blue); }
+    .primary:hover { background:var(--blue-dark); }
+    .secondary { color:var(--ink); background:#fff; border:1px solid var(--line); }
+    .danger { color:var(--danger); background:#fff; border:1px solid #f0c5c1; }
+    .panel { background:var(--paper); border:1px solid var(--line); border-radius:15px; box-shadow:0 8px 26px rgba(24,49,83,.07); overflow:hidden; }
+    .table-wrap { overflow:auto; max-height:72vh; }
+    table { width:100%; min-width:760px; border-collapse:separate; border-spacing:0; }
+    th,td { border-right:1px solid var(--line); border-bottom:1px solid var(--line); min-width:145px; height:64px; text-align:center; }
+    th { position:sticky; top:0; z-index:3; background:#edf3ff; padding:8px; }
+    th:first-child,td:first-child { position:sticky; left:0; z-index:2; min-width:190px; background:#fff; }
+    th:first-child { z-index:5; background:#dbe8ff; }
+    th:last-child,td:last-child { position:sticky; right:0; z-index:2; min-width:150px; border-right:0; background:#fff; }
+    th:last-child { z-index:5; background:#dbe8ff; }
+    tr:last-child td { border-bottom:0; }
+    .editable { width:100%; border:1px solid transparent; border-radius:7px; background:transparent; padding:8px; color:var(--ink); font:600 14px inherit; text-align:center; }
+    .editable:hover,.editable:focus { border-color:#9bb7ec; background:#fff; outline:0; }
+    .student { text-align:left; padding-left:12px; }
+    .edit-wrap { display:flex; align-items:center; gap:2px; padding:0 5px; }
+    .remove { flex:0 0 26px; padding:3px; color:#98a2b3; background:transparent; font-size:18px; }
+    .remove:hover { color:var(--danger); transform:none; }
+    .status { width:100%; height:100%; min-height:63px; border-radius:0; padding:6px; font-weight:750; }
+    .status:hover { transform:none; filter:brightness(.98); }
+    .open { color:#788396; background:#fff; }
+    .solved { color:var(--yellow-ink); background:var(--yellow); }
+    .done { color:var(--green-ink); background:var(--green); }
+    .progress-cell { padding:10px 13px; }
+    .progress-label { font-weight:750; margin-bottom:6px; }
+    .progress { height:9px; border-radius:10px; background:#e8edf2; overflow:hidden; }
+    .progress > span { display:block; height:100%; background:linear-gradient(90deg,#f6c945,#22a45d); transition:width .25s; }
+    .empty { padding:45px 20px; color:var(--muted); text-align:center; }
+    .legend { display:flex; align-items:center; flex-wrap:wrap; gap:12px 20px; padding:14px 16px; color:var(--muted); font-size:13px; }
+    .key { display:inline-flex; align-items:center; gap:7px; }
+    .swatch { width:15px; height:15px; border-radius:4px; border:1px solid rgba(0,0,0,.08); }
+    .tip { margin-left:auto; }
+    @media (max-width:700px) { .app{padding:18px 12px} header{align-items:flex-start;flex-direction:column}.tip{width:100%;margin:0} }
+    @media print { body{background:#fff}.app{max-width:none;padding:0}.actions,.legend{display:none}.panel{box-shadow:none}.table-wrap{overflow:visible;max-height:none}th,th:first-child,th:last-child{position:static}td:first-child,td:last-child{position:static} }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header>
+      <div><h1>Aufgabentracker</h1><p class="subtitle">Klassenübersicht für die Lehrperson</p></div>
+      <div class="actions">
+        <button class="primary" id="addStudent">+ Schüler/in</button>
+        <button class="primary" id="addTask">+ Aufgabe</button>
+        <button class="secondary" onclick="window.print()">Drucken</button>
+        <button class="danger" id="reset">Alles zurücksetzen</button>
+      </div>
+    </header>
+    <section class="panel">
+      <div class="table-wrap" id="tableWrap"></div>
+      <div class="legend">
+        <span class="key"><span class="swatch" style="background:#fff"></span>Offen (0 %)</span>
+        <span class="key"><span class="swatch" style="background:var(--yellow)"></span>Gelöst (50 %)</span>
+        <span class="key"><span class="swatch" style="background:var(--green)"></span>Erledigt (100 %)</span>
+        <span class="tip">Tipp: Namen und Aufgabentitel direkt anklicken und überschreiben.</span>
+      </div>
+    </section>
+  </main>
+  <script>
+    const STORAGE_KEY = 'aufgabentracker-v1';
+    const defaultData = {
+      tasks: ['Aufgabe 1', 'Aufgabe 2', 'Aufgabe 3', 'Aufgabe 4'],
+      students: [
+        { name:'Schüler/in 1', states:[0,0,0,0] },
+        { name:'Schüler/in 2', states:[0,0,0,0] },
+        { name:'Schüler/in 3', states:[0,0,0,0] }
+      ]
+    };
+    let data;
+    try { data = JSON.parse(localStorage.getItem(STORAGE_KEY)) || structuredClone(defaultData); }
+    catch { data = structuredClone(defaultData); }
+    const save = () => localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    const esc = s => String(s).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+    const labels = ['Offen','Gelöst','Erledigt'];
+    const classes = ['open','solved','done'];
+    function progress(states) {
+      if (!data.tasks.length) return 0;
+      return Math.round(states.reduce((sum,n) => sum + (n === 1 ? .5 : n === 2 ? 1 : 0), 0) / data.tasks.length * 100);
+    }
+    function render() {
+      const host = document.getElementById('tableWrap');
+      if (!data.tasks.length && !data.students.length) { host.innerHTML='<div class="empty">Füge zuerst Schüler/innen und Aufgaben hinzu.</div>'; return; }
+      let html='<table><thead><tr><th>Schüler/in</th>';
+      data.tasks.forEach((task,j) => html += `<th><div class="edit-wrap"><input class="editable" value="${esc(task)}" data-task="${j}" aria-label="Aufgabentitel bearbeiten"><button class="remove" data-remove-task="${j}" title="Aufgabe entfernen">×</button></div></th>`);
+      html+='<th>Lernfortschritt</th></tr></thead><tbody>';
+      data.students.forEach((student,i) => {
+        const pct=progress(student.states);
+        html += `<tr><td><div class="edit-wrap"><input class="editable student" value="${esc(student.name)}" data-student="${i}" aria-label="Schülername bearbeiten"><button class="remove" data-remove-student="${i}" title="Schüler/in entfernen">×</button></div></td>`;
+        data.tasks.forEach((_,j) => { const state=student.states[j]||0; html += `<td><button class="status ${classes[state]}" data-cell="${i},${j}" title="Klicken, um Status zu ändern">${labels[state]}</button></td>`; });
+        html += `<td class="progress-cell"><div class="progress-label">${pct} %</div><div class="progress"><span style="width:${pct}%"></span></div></td></tr>`;
+      });
+      html+='</tbody></table>'; host.innerHTML=html;
+      host.querySelectorAll('[data-task]').forEach(el => el.addEventListener('change', e => { data.tasks[+e.target.dataset.task]=e.target.value.trim()||'Unbenannte Aufgabe'; save(); render(); }));
+      host.querySelectorAll('[data-student]').forEach(el => el.addEventListener('change', e => { data.students[+e.target.dataset.student].name=e.target.value.trim()||'Unbenannt'; save(); render(); }));
+      host.querySelectorAll('[data-cell]').forEach(el => el.addEventListener('click', e => { const [i,j]=e.currentTarget.dataset.cell.split(',').map(Number); data.students[i].states[j]=((data.students[i].states[j]||0)+1)%3; save(); render(); }));
+      host.querySelectorAll('[data-remove-task]').forEach(el => el.addEventListener('click', e => { const j=+e.currentTarget.dataset.removeTask; data.tasks.splice(j,1); data.students.forEach(s=>s.states.splice(j,1)); save(); render(); }));
+      host.querySelectorAll('[data-remove-student]').forEach(el => el.addEventListener('click', e => { data.students.splice(+e.currentTarget.dataset.removeStudent,1); save(); render(); }));
+    }
+    document.getElementById('addStudent').addEventListener('click', () => { data.students.push({name:`Schüler/in ${data.students.length+1}`,states:data.tasks.map(()=>0)}); save(); render(); });
+    document.getElementById('addTask').addEventListener('click', () => { data.tasks.push(`Aufgabe ${data.tasks.length+1}`); data.students.forEach(s=>s.states.push(0)); save(); render(); });
+    document.getElementById('reset').addEventListener('click', () => { if(confirm('Wirklich alle Namen, Aufgaben und Fortschritte zurücksetzen?')) { data=structuredClone(defaultData); save(); render(); } });
+    render();
+  </script>
+</body>
+</html>
