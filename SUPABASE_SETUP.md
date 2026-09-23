@@ -1,6 +1,6 @@
 # Supabase einrichten
 
-Die Webseite ist vorbereitet, das entfernte Projekt wurde noch nicht verändert.
+Die Webseite verwendet Supabase für Anmeldung und Fortschritte. Das Schema wurde im Projekt bereits eingerichtet; das Einrichtungsskript nicht erneut ausführen. Die folgenden Schritte dokumentieren auch die Einrichtung eines neuen Projekts.
 
 ## 1. Datenbank anlegen
 In Supabase links SQL Editor öffnen, eine neue Abfrage erstellen, den kompletten Inhalt von supabase_setup.sql einfügen und Run klicken. Einmal ausführen; bei Fehlern wird die gesamte Einrichtung zurückgerollt.
@@ -28,7 +28,7 @@ Nur die Zeilen für tatsächlich angelegte Konten ausführen. Weitere Schüler l
 Rollen und Zuordnungen werden ausschliesslich im Dashboard verwaltet. Das Portal darf diese nicht ändern.
 
 ## 4. Webseite testen und veröffentlichen
-Aufgabentracker_Schueler.html und portal.js gemeinsam über einen lokalen Webserver oder einen HTTPS-Webhost bereitstellen; der Webhost muss JavaScript-Module zulassen. Den Link zur HTML-Datei verteilen. Für eine Startseite kann sie beim Hosting index.html heissen.
+index.html und portal.js gemeinsam über einen lokalen Webserver oder einen HTTPS-Webhost bereitstellen; der Webhost muss JavaScript-Module zulassen. Startseite: https://JCallAll79.github.io/aufgabenplanGPT/
 Supabase hostet hier die Datenbank und Anmeldung, nicht die HTML-Datei.
 Die Verbindung benötigt Internet und lädt die Supabase-Bibliothek von esm.sh.
 Der Publishable Key ist öffentlich. Keine geheimen Schlüssel in Webseite oder GitHub eintragen.
